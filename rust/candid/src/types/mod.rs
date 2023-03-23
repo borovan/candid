@@ -27,18 +27,10 @@ pub trait CandidType {
     // memoized type derivation
     fn ty() -> Type {
         let id = Self::id();
-        if let Some(t) = self::internal::find_type(&id) {
-            match *t {
-                TypeInner::Unknown => TypeInner::Knot(id).into(),
-                _ => t,
-            }
-        } else {
-            self::internal::env_add(id.clone(), TypeInner::Unknown.into());
-            let t = Self::_ty();
-            self::internal::env_add(id.clone(), t.clone());
-            self::internal::env_id(id, t.clone());
-            t
-        }
+        let t = Self::_ty();
+        self::internal::env_add(id.clone(), t.clone());
+        self::internal::env_id(id, t.clone());
+        t
     }
     fn id() -> TypeId {
         TypeId::of::<Self>()
